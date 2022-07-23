@@ -13,7 +13,7 @@ from service_mixin_test import MyService
 
 # noinspection SqlDialectInspection,SqlNoDataSourceInspection
 class TestQuery:
-    class TestService(MyService):
+    class MyTestService(MyService):
         def __init__(self, method: SparqlMethod = SparqlMethod.POST):
             super().__init__(0.0)
             self.encoding = 'utf-8'
@@ -79,7 +79,7 @@ class TestQuery:
         mock_response = MagicMock(spec=HTTPResponse, name="Mock response")
         mock_response.status = error_code
         mock_response.read.return_value = error_message.encode()
-        service = self.TestService(method)
+        service = self.MyTestService(method)
         service.endpoint = endpoint
         service.pool_request = MagicMock(return_value=mock_response)
 
@@ -107,7 +107,7 @@ class TestQuery:
         mock_response = MagicMock(spec=HTTPResponse, name="Mock response")
         mock_response.status = http_status
         mock_response.read.return_value = http_body.encode()
-        service = self.TestService(method)
+        service = self.MyTestService(method)
         service.endpoint = endpoint
         service.pool_request = MagicMock(return_value=mock_response)
 
@@ -129,7 +129,7 @@ class TestQuery:
         statement = 'Hello'
         exception = ConnectTimeoutError()
 
-        service = self.TestService(method)
+        service = self.MyTestService(method)
         service.endpoint = endpoint
         service.pool_request = MagicMock(side_effect=exception)
 
@@ -212,13 +212,13 @@ class TestQuery:
         ],
         [
             SparqlMethod.POST_URL_ENCODED, False,
-            TestService.ENDPOINT,
+            MyTestService.ENDPOINT,
             Query.CONTENT_TYPE_POST_URLENCODED,
             ONLY_STATEMENT_URI_ENCODED,
         ],
         [
             SparqlMethod.POST_URL_ENCODED, True,
-            TestService.ENDPOINT,
+            MyTestService.ENDPOINT,
             Query.CONTENT_TYPE_POST_URLENCODED,
             FULL_STATEMENT_URI_ENCODED,
         ],
@@ -245,7 +245,7 @@ class TestQuery:
         :param exp_body: Expected request body content
                          (as returned by query_body())
         """
-        q = Query(self.TestService(method))
+        q = Query(self.MyTestService(method))
         if full:
             self.set_prefixes(q)
             self.set_default_graphs(q)
@@ -267,7 +267,7 @@ class TestQuery:
         """
         Tests special query_uri case, where the endpoint already contains other parameters
         """
-        q = Query(self.TestService(SparqlMethod.GET))
+        q = Query(self.MyTestService(SparqlMethod.GET))
         param_endpoint = 'https://a.b.c/d?source=abcd'
         q.endpoint = param_endpoint
         self.set_prefixes(q)
@@ -279,7 +279,7 @@ class TestQuery:
         """
         Tests special query_uri case, where the endpoint already contains other parameters
         """
-        q = Query(self.TestService(SparqlMethod.POST))
+        q = Query(self.MyTestService(SparqlMethod.POST))
         param_endpoint = 'https://a.b.c/d?source=abcd'
         q.endpoint = param_endpoint
         self.set_prefixes(q)
@@ -288,7 +288,7 @@ class TestQuery:
         assert q.query_uri(self.STATEMENT_PLAIN) == param_endpoint + '&' + self.GRAPH_URI_STRINGS
 
     def test_param_string(self):
-        q = Query(self.TestService(SparqlMethod.POST_URL_ENCODED))  # Method is irrelevant
+        q = Query(self.MyTestService(SparqlMethod.POST_URL_ENCODED))  # Method is irrelevant
         self.set_named_graphs(q)
         self.set_default_graphs(q)
         self.set_prefixes(q)
@@ -297,16 +297,16 @@ class TestQuery:
         assert q.param_string(self.STATEMENT_PLAIN) == self.FULL_STATEMENT_URI_ENCODED
 
     def test_param_string_minimal(self):
-        q = Query(self.TestService(SparqlMethod.POST_URL_ENCODED))  # Method is irrelevant
+        q = Query(self.MyTestService(SparqlMethod.POST_URL_ENCODED))  # Method is irrelevant
         assert q.param_string(None) == ''
         assert q.param_string('') == ''
         assert q.param_string(self.STATEMENT_PLAIN) == self.ONLY_STATEMENT_URI_ENCODED
 
     def test_query_string(self):
-        q = Query(self.TestService())
+        q = Query(self.MyTestService())
         self.set_prefixes(q)
         assert q.query_string(self.STATEMENT_PLAIN) == self.FULL_STATEMENT_PLAIN
 
     def test_query_string_no_prefix(self):
-        q = Query(self.TestService())
+        q = Query(self.MyTestService())
         assert q.query_string(self.STATEMENT_PLAIN) == self.STATEMENT_PLAIN
