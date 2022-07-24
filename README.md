@@ -1,15 +1,18 @@
 # sparql2 - A new SPARQL HTTP client library
 SPAQL query library for SELECT and ASK queries against a SPARQL endpoint via HTTP.
 
-This code (and README) is using an earlier [eea/sparql-client](https://github.com/eea/sparql-client), 
-which stopped being maintained and kept supporting old versions of Python. This package drops that support
+This code (and README) is using an earlier
+[eea/sparql-client](https://github.com/eea/sparql-client),
+which stopped being maintained in 2020 and the old code got very complicated,
+as it kept supporting old versions of Python. This package drops that support
 and makes it easier to be maintained against the new Python versions.
 
 The code will automatically convert literals to corresponding Python  types.
 
-API is based on 
-[SPARQL_JavaScript_Library](https://web.archive.org/web/20120518014957/http://www.thefigtrees.net/lee/sw/sparql.js) 
-by Lee Feigenbaum and Elias Torres. Heavy influence from Juan Manuel Caicedo’s SPARQL library.
+API is based on
+[SPARQL_JavaScript_Library](https://web.archive.org/web/20120518014957/http://www.thefigtrees.net/lee/sw/sparql.js)
+by Lee Feigenbaum and Elias Torres. Heavy influence from Juan Manuel
+Caicedo’s SPARQL library.
 
 ## API
 
