@@ -4,10 +4,8 @@ import pytest
 from urllib3 import HTTPResponse
 from urllib3.exceptions import ConnectTimeoutError
 
-from exception import SparqlException, SparqlProtocolException
-from query import Query
-from service_base import HEADER_ACCEPT, HEADER_USER_AGENT, SparqlMethod, \
-    USER_AGENT
+from sparqlc import SparqlException, SparqlProtocolException, Query, SparqlMethod
+from sparqlc.service_base import HEADER_ACCEPT, HEADER_USER_AGENT, USER_AGENT
 from service_mixin_test import MyService
 
 

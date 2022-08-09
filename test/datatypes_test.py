@@ -1,6 +1,7 @@
 import pytest
 
-from datatypes import BlankNode, Datatype, datatype_dict, IRI, Literal, RDFTerm
+from sparqlc import BlankNode, Datatype, IRI, Literal, RDFTerm
+from sparqlc.datatypes import datatype_dict
 
 
 def test_datatype_none():

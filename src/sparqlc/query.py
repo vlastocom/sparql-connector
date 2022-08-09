@@ -5,9 +5,9 @@ from urllib.parse import urlencode
 from urllib3 import HTTPResponse
 from urllib3.exceptions import HTTPError
 
-from exception import SparqlException, SparqlProtocolException
-from result_set import ResultSet
-from service_base import ServiceBase, RESULT_TYPE_SPARQL_XML, SparqlMethod
+from .exception import SparqlException, SparqlProtocolException
+from .result_set import ResultSet
+from .service_base import ServiceBase, RESULT_TYPE_SPARQL_XML, SparqlMethod
 
 
 class Query(ServiceBase):

@@ -1,1 +1,1 @@
-include sparql2/version.txt
+include src/version.txt

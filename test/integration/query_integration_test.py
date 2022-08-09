@@ -2,8 +2,7 @@ from typing import cast
 
 import pytest
 
-from service import query
-from service_base import SparqlMethod
+from sparqlc import query, SparqlMethod
 
 
 class TestQueryIntegration:

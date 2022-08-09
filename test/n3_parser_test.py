@@ -2,9 +2,8 @@ from typing import cast, Tuple
 
 import pytest
 
-from datatypes import IRI, Literal
+from sparqlc import IRI, Literal, parse_n3_term
 from datatypes_test import TestLiteral
-from n3_parser import parse_n3_term
 
 
 class TestN3Parsing:

@@ -9,11 +9,11 @@ from xml.sax import SAXParseException
 
 from dateutil.parser import parse as dt_parse
 
-from datatypes import BlankNode, Datatype, IRI, Literal, RDFTerm
-from datatypes import XSD_BOOLEAN, XSD_DECIMAL
-from datatypes import XSD_DATE, XSD_DATETIME, XSD_TIME
-from datatypes import XSD_DOUBLE, XSD_FLOAT, XSD_INT, XSD_INTEGER, XSD_LONG
-from exception import SparqlParseException
+from .datatypes import BlankNode, Datatype, IRI, Literal, RDFTerm
+from .datatypes import XSD_BOOLEAN, XSD_DECIMAL
+from .datatypes import XSD_DATE, XSD_DATETIME, XSD_TIME
+from .datatypes import XSD_DOUBLE, XSD_FLOAT, XSD_INT, XSD_INTEGER, XSD_LONG
+from .exception import SparqlParseException
 
 QUERY_ROW = Tuple[RDFTerm, ...]
 DEFAULT_ENCODING = 'utf-8'

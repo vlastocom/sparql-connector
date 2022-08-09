@@ -8,9 +8,9 @@ from typing import cast
 
 import pytest
 
-from datatypes import BlankNode, IRI, Literal, XSD_FLOAT, XSD_INTEGER, XSD_STRING
-from exception import SparqlParseException
-from result_set import RawResultSet, ResultSet
+from sparqlc import BlankNode, IRI, Literal, SparqlParseException, RawResultSet
+from sparqlc import ResultSet, XSD_FLOAT, XSD_INTEGER, XSD_STRING
+
 
 TYPE_MILLION_USD = 'http://aims.fao.org/aos/geopolitical.owl#MillionUSD'
 

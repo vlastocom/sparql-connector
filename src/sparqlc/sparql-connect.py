@@ -26,11 +26,11 @@
 
 # noinspection PyShadowingNames,PyUnresolvedReferences
 """
-The `sparql` module can be invoked in several different ways. To quickly run a
-query use :func:`query`. Results are encapsulated in a
+The `sparql-connect` module can be invoked in several different ways.
+To quickly run a query use :func:`query`. Results are encapsulated in a
 :class:`_ResultsParser` instance::
 
-    >>> result = sparql2.query(endpoint, query)
+    >>> result = sparql.query(endpoint, query)
     >>> for row in result:
     >>>    print(row)
 
@@ -52,15 +52,16 @@ Otherwise, the query is read from standard input.
 import sys
 from typing import List, Tuple
 
-from exception import SparqlException
-from service import query
-from version import VERSION
+from .exception import SparqlException
+from .service import query
+from .version import VERSION
 
 
 def parse_command_line() -> Tuple[str, bool]:
     """
     Parses command line arguments, errors and exists in the case of failure
-    :return: Endpoint and a flag indicating if this tool should be run in an interactive mode
+    :return: Endpoint and a flag indicating if this tool should be run in an
+             interactive mode
     """
     from optparse import OptionParser
 

@@ -5,12 +5,12 @@ from typing import Any, Dict, List
 from overrides import overrides
 from urllib3 import HTTPResponse
 
-from version import VERSION
+from .version import VERSION
 
 HEADER_ACCEPT = 'Accept'
 HEADER_USER_AGENT = 'User-Agent'
 
-USER_AGENT = f"sparql-client/{VERSION} +https://github.com/vlastocom/sparql2"
+USER_AGENT = f"sparql-client/{VERSION} +https://github.com/vlastocom/sparql-connector"
 
 RESULT_TYPE_SPARQL_XML = 'application/sparql-results+xml'
 RESULT_TYPE_SPARQL_JSON = 'application/sparql-results+json'

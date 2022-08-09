@@ -2,7 +2,7 @@ import ast as ast_compiler
 import re
 from typing import cast
 
-from datatypes import IRI, Literal, RDFTerm
+from .datatypes import IRI, Literal, RDFTerm
 
 _n3parser_lang = re.compile(r'@(?P<lang>\w+)$')
 _n3parser_datatype = re.compile(r'\^\^<(?P<datatype>[^\^"\'>]+)>$')

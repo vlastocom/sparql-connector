@@ -2,10 +2,10 @@ from base64 import encodebytes
 
 from urllib3 import HTTPResponse, PoolManager
 
-from query import Query
-from result_set import ResultSet
-from service_base import ServiceBase, DEFAULT_ACCEPT
-from service_base import DEFAULT_ENCODING, DEFAULT_MAX_REDIRECTS, DEFAULT_TIMEOUT, RESULT_TYPE_SPARQL_XML, SparqlMethod
+from .query import Query
+from .result_set import ResultSet
+from .service_base import ServiceBase, DEFAULT_ACCEPT
+from .service_base import DEFAULT_ENCODING, DEFAULT_MAX_REDIRECTS, DEFAULT_TIMEOUT, RESULT_TYPE_SPARQL_XML, SparqlMethod
 
 
 class Service(ServiceBase):

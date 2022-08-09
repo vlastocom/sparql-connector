@@ -1,4 +1,4 @@
-from exception import SparqlException, SparqlParseException, SparqlProtocolException
+from sparqlc import SparqlException, SparqlParseException, SparqlProtocolException
 
 
 class TestSparqlException:

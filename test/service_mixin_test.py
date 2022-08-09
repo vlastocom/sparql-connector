@@ -3,7 +3,8 @@ from unittest.mock import MagicMock
 from urllib3 import HTTPResponse
 
 # noinspection PyProtectedMember
-from service_base import ServiceBase, SparqlMethod, USER_AGENT
+from sparqlc import SparqlMethod
+from sparqlc.service_base import ServiceBase, USER_AGENT
 
 
 class MyService(ServiceBase):
