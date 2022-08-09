@@ -178,7 +178,7 @@ TBD
 The contents off this package are subject to the 
 [Mozilla Public License Version 2.0](https://github.com/vlastocom/sparql2/blob/master/LICENSE).
 
-Owner of this project: Vlasto Chvojka
+Owner of this fork: Vlasto Chvojka
 
 Original authors of SPARQL client code:
 * Søren Roug, EEA
