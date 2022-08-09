@@ -338,9 +338,3 @@ class TestResultSet:
         extras = {'typeX': float}
         raw = (Literal('123', datatype='typeX'),)
         assert ResultSet.unpack_row(raw, additional_types=extras) == (123.0,)
-
-    # TODO: Add tests with mock urllib request:
-    # - testing successful read
-    # - testing failure to read (closed stream)
-    # - testing unicode bytes response
-    # - testing malformed response

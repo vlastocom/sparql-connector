@@ -6,7 +6,7 @@ from urllib3 import HTTPResponse
 from urllib3.exceptions import HTTPError
 
 from .exception import SparqlException, SparqlProtocolException
-from .result_set import ResultSet
+from .result_set import RawResultSet, ResultSet
 from .service_base import ServiceBase, RESULT_TYPE_SPARQL_XML, SparqlMethod
 
 
@@ -37,6 +37,22 @@ class Query(ServiceBase):
         :param statement: SPARQL statement to send
         :return: ResultSet allowing to parse the response
         """
+        return ResultSet(self._query(statement), self.encoding)
+
+    def raw_query(self, statement: str) -> RawResultSet:
+        """
+        Sends the statement and starts parsing the response to raw types.
+        :param statement: SPARQL statement to send
+        :return: RawResultSet allowing to parse the response
+        """
+        return RawResultSet(self._query(statement), self.encoding)
+
+    def _query(self, statement: str) -> HTTPResponse:
+        """
+        Sends the statement and receives the response. Handles HTTP errors.
+        :param statement: SPARQL statement to send
+        :return: ResultSet allowing to parse the response
+        """
         try:
             response = self.pool_request(
                 self.method,
@@ -47,9 +63,9 @@ class Query(ServiceBase):
                 **self.request_kwargs
             )
             if response.status == 200:
-                return ResultSet(response)
+                return response
             else:
-                msg = response.read().decode()
+                msg = response.read().decode(self.encoding)
                 response.close()
                 raise SparqlProtocolException(response.status, msg)
         except HTTPError as http_error:

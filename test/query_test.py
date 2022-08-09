@@ -4,7 +4,7 @@ import pytest
 from urllib3 import HTTPResponse
 from urllib3.exceptions import ConnectTimeoutError
 
-from sparqlc import SparqlException, SparqlProtocolException, Query, SparqlMethod
+from sparqlc import RawResultSet, ResultSet, SparqlException, SparqlProtocolException, Query, SparqlMethod
 from sparqlc.service_base import HEADER_ACCEPT, HEADER_USER_AGENT, USER_AGENT
 from service_mixin_test import MyService
 
@@ -110,6 +110,7 @@ class TestQuery:
         service.pool_request = MagicMock(return_value=mock_response)
 
         result_set = Query(service).query(statement)
+        assert type(result_set) is ResultSet
         assert result_set.get_raw_response_text() == http_body
 
         service.pool_request.assert_called_once_with(
@@ -133,6 +134,85 @@ class TestQuery:
 
         with pytest.raises(SparqlException) as exc_info:
             Query(service).query(statement)
+
+        assert exc_info.value.message.index('HTTP Error') == 0
+        assert exc_info.value.__cause__ is exception
+        service.pool_request.assert_called_once_with(
+            method,
+            f'{endpoint}?query={statement}',
+            headers=self.DEFAULT_HEADERS,
+            body=None,
+            preload_content=False,
+            retries=MyService.MAX_REDIRECTS
+        )
+
+    def test_raw_query_fail(self):
+        method = SparqlMethod.GET
+        endpoint = 'http://a.b/c'
+        statement = 'Hello'
+        error_code = 500
+        error_message = 'Error occurred'
+
+        mock_response = MagicMock(spec=HTTPResponse, name="Mock response")
+        mock_response.status = error_code
+        mock_response.read.return_value = error_message.encode()
+        service = self.MyTestService(method)
+        service.endpoint = endpoint
+        service.pool_request = MagicMock(return_value=mock_response)
+
+        with pytest.raises(SparqlProtocolException) as exc_info:
+            Query(service).raw_query(statement)
+
+        assert exc_info.value.code == 500
+        assert exc_info.value.message.index(error_message) >= 0
+        service.pool_request.assert_called_once_with(
+            method,
+            f'{endpoint}?query={statement}',
+            headers=self.DEFAULT_HEADERS,
+            body=None,
+            preload_content=False,
+            retries=MyService.MAX_REDIRECTS
+        )
+
+    def test_raw_query_success(self):
+        method = SparqlMethod.GET
+        endpoint = 'http://a.b/c'
+        statement = 'Hello'
+        http_status = 200
+        http_body = 'We are not parsing this'
+
+        mock_response = MagicMock(spec=HTTPResponse, name="Mock response")
+        mock_response.status = http_status
+        mock_response.read.return_value = http_body.encode()
+        service = self.MyTestService(method)
+        service.endpoint = endpoint
+        service.pool_request = MagicMock(return_value=mock_response)
+
+        result_set = Query(service).raw_query(statement)
+        assert type(result_set) is RawResultSet
+        assert result_set.get_raw_response_text() == http_body
+
+        service.pool_request.assert_called_once_with(
+            method,
+            f'{endpoint}?query={statement}',
+            headers=self.DEFAULT_HEADERS,
+            body=None,
+            preload_content=False,
+            retries=MyService.MAX_REDIRECTS
+        )
+
+    def test_raw_query_exception(self):
+        method = SparqlMethod.GET
+        endpoint = 'http://a.b/c'
+        statement = 'Hello'
+        exception = ConnectTimeoutError()
+
+        service = self.MyTestService(method)
+        service.endpoint = endpoint
+        service.pool_request = MagicMock(side_effect=exception)
+
+        with pytest.raises(SparqlException) as exc_info:
+            Query(service).raw_query(statement)
 
         assert exc_info.value.message.index('HTTP Error') == 0
         assert exc_info.value.__cause__ is exception

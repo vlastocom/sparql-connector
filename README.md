@@ -49,29 +49,41 @@ works = result.hasresult()
 ...      '?station a <http://dbpedia.org/ontology/SpaceStation> . '
 ...      '?station <http://dbpedia.org/property/orbits> ?orbits . '
 ...      'FILTER(?orbits > 50000) } ORDER BY DESC(?orbits)')
->>> result = sparqlc.query('http://dbpedia.org/sparql', q)
+>>> ep = 'http://dbpedia.org/sparql'
+
+>>> result = sparqlc.query(ep, q)
 >>> result.variables
 [u'station', u'orbits']
 
 >>> for row in result:
-...     print 'row:', row
-...     values = sparql.unpack_row(row)
-...     print values[0], "-", values[1], "orbits"
+...     print(f'{row[0]} - {row[1]} orbits')
+'http://dbpedia.org/resource/Mir - 86331 orbits'
+'http://dbpedia.org/resource/Salyut_7 - 51917 orbits'
+
+>>> result = sparqlc.raw_query('http://dbpedia.org/sparql', q)
+>>> result.variables
+[u'station', u'orbits']
+
+>>> for row in result:
+...     print(f'row: {row}')
 row: (<IRI <http://dbpedia.org/resource/Mir>>, <Literal "86331"^^<http://www.w3.org/2001/XMLSchema#int>>)
-http://dbpedia.org/resource/Mir - 86331 orbits
 row: (<IRI <http://dbpedia.org/resource/Salyut_7>>, <Literal "51917"^^<http://www.w3.org/2001/XMLSchema#int>>)
-http://dbpedia.org/resource/Salyut_7 - 51917 orbits
 ```
 
-## sparql module
-The `sparql` module can be invoked in several different ways. 
-To quickly run a query use `query()`. 
-Results are encapsulated in a `_ResultsParser` instance:
+## sparqlc module
+The `sparqlc` module can be invoked in several different ways.
+To quickly run a query, use `sparqlc.query()` or  `sparqlc.raw_query()`.
+Results are encapsulated in a `ResultSet` or a `RawResultSet` instance,
+difference being that the former instance contains values  converted to
+plain Python types, whereas the `RawResultSet` contains the parsed `RDFTerm`
+objects. `ResultSet.unpack_row()` method can be used to unpack those later.
 
 ```python
 >>> result = sparqlc.query(endpoint, query)
 >>> for row in result:
->>>    print row
+>>>    print(f'row: {row}')
+row: ('http://dbpedia.org/resource/Mir', 86331)
+row: ('http://dbpedia.org/resource/Salyut_7', 51917)
 ```
 
 ## Command line use
@@ -162,9 +174,14 @@ values:
       an extra argument convert may be passed. It should be a callable accepting 
       two arguments: the serialized value as a unicode object, and the XSD datatype.
 
-`sparqlc.query(endpoint, query)`
+`sparqlc.query(endpoint, query), sparqlc.raw_query(endpoint, query)`
 :   Convenient method to execute a query. 
 Exactly equivalent to `sparqlc.Service(endpoint).query(query)`
+and `sparqlc.Service(endpoint).raw_query(query)`.
+The `query()` methods return `ResultSet` with converted values,
+the `raw_query()` methods return a `RawResultSet` containing unconverted
+`RDFTerm` objects parsed from the SparQL response.
+Use `RawResultSet.unpack_row()` to convert these later.
 
 ## Conversion of data types
 The library will automatically convert typed literals to a corresponding
