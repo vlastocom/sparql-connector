@@ -189,7 +189,24 @@ simple type in Python. Dates are also converted if the
 [dateutil](http://labix.org/python-dateutil) library is available.
 
 # Contributing to the project
-TBD
+## Setup
+1. Fork the project into your private space and clone it to your machine
+2. Install all supported versions of python interpreter
+3. Create and activate the environment
+    ```
+    python venv venv
+    . ./venv/bin/activate
+    pip install -r requirements.build.txt
+    ```
+4. Run the unit tests in all possible python versions.
+    ```
+    tox
+    ```
+
+**NB:** Integration tests depend on external public queries, which, as the world changes,
+may occasionally become broken. If that occurs, please feel free to fix those
+in a separate PR.
+
 
 # License
 The contents off this package are subject to the 
