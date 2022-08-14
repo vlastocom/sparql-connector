@@ -19,19 +19,30 @@ Caicedo’s SPARQL library.
 First you open a connection to the endpoint:
 
 ```python
-s = sparqlc.Service(endpoint, "utf-8", "GET")
+import sparqlc
+endpoint = 'http://a.b/c'
+svc = sparqlc.Service(endpoint)
 ```
 
 Then you make the query:
 
 ```python
-result = s.query(statement)
+statement = 'SELECT ... ORDER BY ...'
+results = svc.query(statement)
 ```
 
-If you have made a SELECT query, then you can read the result with `fetchone()` or `fetchall()`:
+If you have made a SELECT query, then you can read the result using iterator:
 
 ```python
-for row in result.fetchone():
+for row in results:
+    pass # Do something useful here
+```
+
+Alternatively, you can read all rows at once (small queries only):
+
+```python
+rows = results.fetch_rows(limit=1000)
+for row in rows:
     pass # Do something useful here
 ```
 
