@@ -1,5 +1,5 @@
 from .version import VERSION
-from .service_base import SparqlMethod
+from .service_base import SparqlMethod, RESULT_TYPE_SPARQL_XML, RESULT_TYPE_SPARQL_JSON, RESULT_TYPE_XML_SCHEMA
 from .service import Service, query, raw_query
 from .query import Query
 from .result_set import ResultSet, RawResultSet, DEFAULT_ENCODING, QUERY_ROW

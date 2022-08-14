@@ -1,1 +1,1 @@
-include src/version.txt
+include src/sparqlc/version.txt

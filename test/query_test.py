@@ -1,12 +1,14 @@
+from urllib.parse import quote_plus, urlencode
+from typing import List
 from unittest.mock import MagicMock
 
 import pytest
 from urllib3 import HTTPResponse
 from urllib3.exceptions import ConnectTimeoutError
 
-from sparqlc import RawResultSet, ResultSet, SparqlException, SparqlProtocolException, Query, SparqlMethod
-from sparqlc.service_base import HEADER_ACCEPT, HEADER_USER_AGENT, USER_AGENT
 from service_mixin_test import MyService
+from sparqlc import Query, RawResultSet, ResultSet, SparqlException, SparqlMethod, SparqlProtocolException
+from sparqlc.service_base import HEADER_ACCEPT, HEADER_USER_AGENT, USER_AGENT
 
 
 # noinspection SqlDialectInspection,SqlNoDataSourceInspection
@@ -14,8 +16,21 @@ class TestQuery:
     class MyTestService(MyService):
         def __init__(self, method: SparqlMethod = SparqlMethod.POST):
             super().__init__(0.0)
-            self.encoding = 'utf-8'
+            self.encoding = self.SVC_DEFAULT_ENCODING
             self.method = method
+
+        SVC_DEFAULT_ENCODING = 'utf-8'
+        SVC_DEFAULT_GRAPHS = ['G1', 'G2', 'G3']
+        SVC_NAMED_GRAPHS = ['NG1', 'NG2']
+
+        @classmethod
+        def get_fixture(cls, method: SparqlMethod) -> 'TestQuery.MyTestService':
+            svc = cls.__new__(cls)
+            svc.__init__(method)
+            svc.default_graphs.extend(cls.SVC_DEFAULT_GRAPHS)
+            svc.named_graphs.extend(cls.SVC_NAMED_GRAPHS)
+            svc.endpoint = cls.ENDPOINT
+            return svc
 
     DEFAULT_HEADERS = {
         HEADER_ACCEPT: MyService.ACCEPT,
@@ -95,29 +110,106 @@ class TestQuery:
             retries=MyService.MAX_REDIRECTS
         )
 
-    def test_query_success(self):
-        method = SparqlMethod.GET
-        endpoint = 'http://a.b/c'
-        statement = 'Hello'
-        http_status = 200
-        http_body = 'We are not parsing this'
+    REQUEST_STATEMENT = 'Hello measly world'
+    RESPONSE_HTTP_STATUS = 200
+    RESPONSE_HTTP_BODY = 'We are not parsing this'
 
+    def mock_response_fixture(self) -> HTTPResponse:
         mock_response = MagicMock(spec=HTTPResponse, name="Mock response")
-        mock_response.status = http_status
-        mock_response.read.return_value = http_body.encode()
-        service = self.MyTestService(method)
-        service.endpoint = endpoint
-        service.pool_request = MagicMock(return_value=mock_response)
+        mock_response.status = self.RESPONSE_HTTP_STATUS
+        mock_response.read.return_value = self.RESPONSE_HTTP_BODY.encode()
+        return mock_response
 
-        result_set = Query(service).query(statement)
+    @staticmethod
+    def default_graph_params(graphs: List[str]) -> str:
+        return '&' + str.join('&', map(lambda elem: f'default-graph-uri={elem}', graphs))
+
+    @staticmethod
+    def named_graph_params(graphs: List[str]) -> str:
+        return '&' + str.join('&', map(lambda elem: f'named-graph-uri={elem}', graphs))
+
+    def test_query_success_get(self):
+        method = SparqlMethod.GET
+        svc = self.MyTestService.get_fixture(method)
+        svc.pool_request = MagicMock(return_value=self.mock_response_fixture())
+        result_set = Query(svc).query(self.REQUEST_STATEMENT)
         assert type(result_set) is ResultSet
-        assert result_set.get_raw_response_text() == http_body
+        assert result_set.get_raw_response_text() == self.RESPONSE_HTTP_BODY
 
-        service.pool_request.assert_called_once_with(
+        query_params = [
+            ('query', self.REQUEST_STATEMENT),
+            ('default-graph-uri', self.MyTestService.SVC_DEFAULT_GRAPHS),
+            ('named-graph-uri', self.MyTestService.SVC_NAMED_GRAPHS),
+        ]
+
+        expected_query = self.MyTestService.ENDPOINT + '?' + urlencode(
+            query_params, doseq=True, encoding=self.MyTestService.SVC_DEFAULT_ENCODING
+        )
+
+        svc.pool_request.assert_called_once_with(
             method,
-            f'{endpoint}?query={statement}',
+            expected_query,
             headers=self.DEFAULT_HEADERS,
             body=None,
+            preload_content=False,
+            retries=MyService.MAX_REDIRECTS
+        )
+
+    def test_query_success_post(self):
+        method = SparqlMethod.POST
+        svc = self.MyTestService.get_fixture(method)
+        svc.pool_request = MagicMock(return_value=self.mock_response_fixture())
+        result_set = Query(svc).query(self.REQUEST_STATEMENT)
+        assert type(result_set) is ResultSet
+        assert result_set.get_raw_response_text() == self.RESPONSE_HTTP_BODY
+
+        query_params = [
+            ('default-graph-uri', self.MyTestService.SVC_DEFAULT_GRAPHS),
+            ('named-graph-uri', self.MyTestService.SVC_NAMED_GRAPHS),
+        ]
+
+        expected_query = self.MyTestService.ENDPOINT + '?' + urlencode(
+            query_params, doseq=True, encoding=self.MyTestService.SVC_DEFAULT_ENCODING
+        )
+
+        expected_request_body = self.REQUEST_STATEMENT
+        expected_headers = self.DEFAULT_HEADERS.copy()
+        expected_headers.update({'Content-Type': 'application/sparql-query'})
+
+        svc.pool_request.assert_called_once_with(
+            method,
+            expected_query,
+            headers=expected_headers,
+            body=expected_request_body.encode(self.MyTestService.SVC_DEFAULT_ENCODING),
+            preload_content=False,
+            retries=MyService.MAX_REDIRECTS
+        )
+
+    def test_query_success_post_url_encoded(self):
+        method = SparqlMethod.POST_URL_ENCODED
+        svc = self.MyTestService.get_fixture(method)
+        svc.pool_request = MagicMock(return_value=self.mock_response_fixture())
+        result_set = Query(svc).query(self.REQUEST_STATEMENT)
+        assert type(result_set) is ResultSet
+        assert result_set.get_raw_response_text() == self.RESPONSE_HTTP_BODY
+
+        expected_query = self.MyTestService.ENDPOINT
+
+        body_params = [
+            ('query', self.REQUEST_STATEMENT),
+            ('default-graph-uri', self.MyTestService.SVC_DEFAULT_GRAPHS),
+            ('named-graph-uri', self.MyTestService.SVC_NAMED_GRAPHS),
+        ]
+
+        expected_request_body = urlencode(body_params, doseq=True, encoding=self.MyTestService.SVC_DEFAULT_ENCODING)
+        expected_headers = self.DEFAULT_HEADERS.copy()
+        expected_headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
+
+        svc.pool_request.assert_called_once_with(
+            method,
+            expected_query,
+            headers=expected_headers,
+            body=expected_request_body.encode(self.MyTestService.SVC_DEFAULT_ENCODING),
             preload_content=False,
             retries=MyService.MAX_REDIRECTS
         )

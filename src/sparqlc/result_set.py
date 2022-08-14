@@ -24,7 +24,7 @@ class RawResultSet:
     Represents SparQL result set, which it can parse.
     """
     def __init__(self, file: IOBase, encoding: str = DEFAULT_ENCODING):
-        self.variables: List[str] = []
+        self._variables: List[str] = []
         self._file: IOBase = file
         self._encoding: str = encoding
         self._sax_events: Optional[DOMEventStream] = None
@@ -59,6 +59,11 @@ class RawResultSet:
     def encoding(self) -> str:
         return self._encoding
 
+    @property
+    def variables(self) -> List[str]:
+        self.start_parse()
+        return self._variables
+
     # Maximum length of data returned by get_raw_response_text is 1MB
     MAX_RAW_LEN = 1024 * 1024
 
@@ -86,22 +91,22 @@ class RawResultSet:
         of self.variables need to be accessed before fetching rows, call
         this method first.
         """
-        self.check_closed()
         if self._sax_events:
             return
+        self.check_closed()
         try:
             self._sax_events = pulldom.parse(cast(IO[bytes], self._file))
             for (event, node) in self._sax_events:
                 if event == pulldom.START_ELEMENT:
                     if node.tagName == 'variable':
-                        self.variables.append(node.attributes['name'].value)
+                        self._variables.append(node.attributes['name'].value)
                     elif node.tagName == 'boolean':
                         self._sax_events.expandNode(node)
                         self._has_result = (node.firstChild.data == 'true')
                     elif node.tagName == 'result':
                         return
                 elif event == pulldom.END_ELEMENT:
-                    if node.tagName == 'head' and self.variables:
+                    if node.tagName == 'head' and self._variables:
                         return
                     elif node.tagName == 'sparql':
                         return
@@ -150,9 +155,9 @@ class RawResultSet:
             for (event, node) in self._sax_events:
                 if event == pulldom.START_ELEMENT:
                     if node.tagName == 'result':
-                        row = [None] * len(self.variables)
+                        row = [None] * len(self._variables)
                     elif node.tagName == 'binding':
-                        idx = self.variables.index(
+                        idx = self._variables.index(
                             node.attributes['name'].value
                         )
                     elif node.tagName == 'uri':

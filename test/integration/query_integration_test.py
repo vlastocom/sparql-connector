@@ -18,6 +18,17 @@ class TestQueryIntegration:
         OFFSET 0
     """
 
+    ORDNANCE_SURVEY_QUERY_LARGE = """
+        PREFIX spatial: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/>
+
+        SELECT ?postcode
+        WHERE {
+        ?postcode spatial:within <http://data.ordnancesurvey.co.uk/id/postcodearea/RG>.
+        }
+        LIMIT 20000
+        OFFSET 0
+    """
+
     @pytest.mark.parametrize('method', [m for m in SparqlMethod])
     def test_ordnance_survey_query(self, method: SparqlMethod):
         """
@@ -108,27 +119,14 @@ class TestQueryIntegration:
         A large list of scientific papers from ScholarlyData (more than 2.5MB of them)
         """
         q = query(
-            self.ENDPOINT_SCHOLARLY_DATA,
-            self.LARGE_QUERY,
+            self.ORDNANCE_SURVEY_ENDPOINT,
+            self.ORDNANCE_SURVEY_QUERY_LARGE,
             method=SparqlMethod.GET
         )
         rows = q.fetch_rows()
-        assert len(rows) >= 5950
+        assert len(rows) == 20000
         one_row = list(filter(
-            lambda r: r[0] == 'https://w3id.org/scholarlydata/inproceedings/iswc2005/proceedings/paper-39',
+            lambda r: r[0] == 'http://data.ordnancesurvey.co.uk/id/postcodeunit/RG46RH',
             rows
         ))
-        assert one_row == [
-            (
-                'https://w3id.org/scholarlydata/inproceedings/iswc2005/proceedings/paper-39',
-                'On Identifying Knowledge Processing Requirements',
-                'https://w3id.org/scholarlydata/person/alain-leger',
-                'Alain Léger'
-            ),
-            (
-                'https://w3id.org/scholarlydata/inproceedings/iswc2005/proceedings/paper-39',
-                'On Identifying Knowledge Processing Requirements',
-                'https://w3id.org/scholarlydata/person/alain-leger',
-                'Alain Leger'
-            )
-        ]
+        assert len(one_row) == 1

@@ -168,8 +168,9 @@ class TestRawResultSet:
         file = tmp_file(tmp_path)
         rs = RawResultSet(file, 'utf-16')
         file.close()
-        assert rs.variables == []
         assert rs.closed is True
+        with pytest.raises(RuntimeError):
+            assert rs.variables == []
 
     def test_encoding_default(self, tmp_path):
         assert RawResultSet(tmp_file(tmp_path)).encoding == 'utf-8'
@@ -219,9 +220,9 @@ class TestRawResultSet:
 
     def test_start_parse(self, tmp_path):
         rs = RawResultSet(tmp_file(tmp_path, resource('simple_result.srx')))
-        assert rs.variables == []
+        assert rs._variables == []
         rs.start_parse()
-        assert rs.variables == SIMPLE_RESULT_VARS
+        assert rs._variables == SIMPLE_RESULT_VARS
 
     def test_simple_query_fetch_rows(self, tmp_path):
         rs = RawResultSet(tmp_file(tmp_path, resource('simple_result.srx')))

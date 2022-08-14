@@ -7,7 +7,7 @@ from urllib3.exceptions import HTTPError
 
 from .exception import SparqlException, SparqlProtocolException
 from .result_set import RawResultSet, ResultSet
-from .service_base import ServiceBase, RESULT_TYPE_SPARQL_XML, SparqlMethod
+from .service_base import ServiceBase, SparqlMethod
 
 
 class Query(ServiceBase):
@@ -16,7 +16,7 @@ class Query(ServiceBase):
             service.method,
             service.endpoint,
             service.encoding,
-            RESULT_TYPE_SPARQL_XML,
+            service.accept,
             service.max_redirects,
             service.timeout
         )
