@@ -11,7 +11,7 @@ def test_readme_example_1() -> None:
     result = sparqlc.query(ep, q, sparqlc.SparqlMethod.GET)
     assert result.variables == ['station', 'orbits']
     assert result.fetch_rows() == [
-        ('http://dbpedia.org/resource/International_Space_Station', 131440),
+        ('http://dbpedia.org/resource/International_Space_Station', 133312),
         ('http://dbpedia.org/resource/Mir', 86331),
         ('http://dbpedia.org/resource/Salyut_7', 51917),
         ('http://dbpedia.org/resource/Kosmos_557', '~175'),
@@ -30,7 +30,7 @@ def test_readme_example1_raw() -> None:
     assert rows == [
         (
             IRI('http://dbpedia.org/resource/International_Space_Station'),
-            Literal(131440, 'http://www.w3.org/2001/XMLSchema#integer'),
+            Literal(133312, 'http://www.w3.org/2001/XMLSchema#integer'),
         ),
         (
             IRI('http://dbpedia.org/resource/Mir'),

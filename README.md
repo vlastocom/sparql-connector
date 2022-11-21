@@ -68,7 +68,7 @@ works = result.hasresult()
 
 >>> for row in result:
 ...     print(f'{row[0]} - {row[1]} orbits')
-'http://dbpedia.org/resource/International_Space_Station - 131440 orbits'
+'http://dbpedia.org/resource/International_Space_Station - 133312 orbits'
 'http://dbpedia.org/resource/Mir - 86331 orbits'
 'http://dbpedia.org/resource/Salyut_7 - 51917 orbits'
 'http://dbpedia.org/resource/Kosmos_557 - ~175 orbits'
@@ -80,7 +80,7 @@ works = result.hasresult()
 
 >>> for row in result:
 ...     print(f'row: {row}')
-row: (<IRI <http://dbpedia.org/resource/International_Space_Station>>, <Literal "131440"^^<http://www.w3.org/2001/XMLSchema#integer>>)
+row: (<IRI <http://dbpedia.org/resource/International_Space_Station>>, <Literal "133312"^^<http://www.w3.org/2001/XMLSchema#integer>>)
 row: (<IRI <http://dbpedia.org/resource/Mir>>, <Literal "86331"^^<http://www.w3.org/2001/XMLSchema#integer>>)
 row: (<IRI <http://dbpedia.org/resource/Salyut_7>>, <Literal "51917"^^<http://www.w3.org/2001/XMLSchema#integer>>)
 row: (<IRI <http://dbpedia.org/resource/Kosmos_557>>, <Literal "~175"@en>)
